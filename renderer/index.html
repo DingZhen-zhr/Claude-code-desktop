@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline';">
+  <title>Claude Code</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <div class="sidebar-logo">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <button id="btn-new-chat" class="sidebar-btn" title="New chat">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+      </button>
+    </div>
+    <div class="sidebar-conversations" id="conversation-list">
+      <!-- conversations will appear here -->
+    </div>
+    <div class="sidebar-bottom">
+      <button id="btn-sidebar-settings" class="sidebar-btn" title="Settings">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Area -->
+  <div class="main-area">
+    <!-- Top Bar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="model-badge">
+          <select id="model-selector" class="model-select">
+            <option value="">Default model</option>
+            <option value="DeepSeek-v4-pro">DeepSeek v4 Pro</option>
+            <option value="claude-sonnet-4-6">Claude Sonnet 4.6</option>
+            <option value="claude-opus-4-7">Claude Opus 4.7</option>
+          </select>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <span id="status-indicator" class="status-badge idle">Idle</span>
+      </div>
+    </header>
+
+    <!-- Chat -->
+    <div class="chat-area" id="chat-container">
+      <div id="welcome-screen" class="welcome">
+        <div class="welcome-icon">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+            <path d="M2 17l10 5 10-5"/>
+            <path d="M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <h1 class="welcome-title">Claude Code</h1>
+        <p class="welcome-desc">Ask me anything — I can read, write, edit files, run commands, and more.</p>
+      </div>
+      <div id="messages-area" class="messages"></div>
+    </div>
+
+    <!-- Input -->
+    <div class="input-area">
+      <div id="session-indicator" class="session-bar hidden">
+        <span class="session-dot"></span>
+        <span id="session-id-display">Active</span>
+        <button id="btn-new-session" class="session-btn">New session</button>
+      </div>
+      <div class="input-box">
+        <textarea id="message-input" class="input-field" rows="1" placeholder="Type a message..." autofocus></textarea>
+        <button id="btn-send" class="send-btn" title="Send">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        </button>
+      </div>
+      <div class="input-hint">Claude Code may execute commands on your behalf.</div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settings-overlay" class="overlay hidden"></div>
+  <div id="settings-panel" class="settings hidden">
+    <div class="settings-head">
+      <h3>Settings</h3>
+      <button id="btn-close-settings" class="icon-btn">&times;</button>
+    </div>
+    <div class="settings-body">
+      <div class="field">
+        <label>Working directory</label>
+        <input type="text" id="settings-cwd" placeholder="/path/to/project" />
+      </div>
+      <div class="field">
+        <label>System prompt</label>
+        <textarea id="settings-system-prompt" rows="3" placeholder="Custom instructions..."></textarea>
+      </div>
+      <div class="field">
+        <label>Permission mode</label>
+        <select id="settings-permission">
+          <option value="default">Default</option>
+          <option value="auto">Auto</option>
+          <option value="bypassPermissions">Bypass all</option>
+          <option value="acceptEdits">Accept edits</option>
+          <option value="dontAsk">Don't ask</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Temperature</label>
+        <div class="range-row">
+          <input type="range" id="settings-temperature" min="0" max="2" step="0.1" value="0.7" />
+          <span id="temp-display">0.7</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
